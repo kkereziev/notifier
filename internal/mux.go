@@ -1,27 +1,32 @@
 package internal
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/dimfeld/httptreemux/v5"
 )
 
 const (
-	_apiURI = "/api/v1"
+	_apiURLPattern    = "/api/v1"
+	_slackEndpointURL = "/slack"
 )
 
+// Notifier is manages notification sending.
+//
+// Implementations of Notifier must be save for concurrent use by multiple goroutines.
+type Notifier interface {
+	SlackNotifier
+}
+
 // NewMux is a constructor function for creating new multiplexer for the HTTP server.
-func NewMux() *httptreemux.TreeMux {
-	m := httptreemux.New()
+func NewMux(config *Config, notifier Notifier) *httptreemux.ContextMux {
+	mux := httptreemux.NewContextMux()
 
-	g := m.NewGroup(_apiURI)
+	registerRoutes(config, mux, notifier)
 
-	g.POST("/slack", func(w http.ResponseWriter, _ *http.Request, _ map[string]string) {
-		w.WriteHeader(http.StatusOK)
+	return mux
+}
 
-		fmt.Fprintf(w, "Hi")
-	})
+func registerRoutes(config *Config, m *httptreemux.ContextMux, notifier Notifier) {
+	g := m.NewGroup(_apiURLPattern)
 
-	return m
+	g.POST(_slackEndpointURL, MakeSlackEndpoint(config, notifier))
 }

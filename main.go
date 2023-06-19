@@ -28,9 +28,11 @@ func run(log *log.Logger) error {
 		return fmt.Errorf("config initialization: %v", err)
 	}
 
+	s := internal.NewService(cfg)
+
 	server := &http.Server{
 		Addr:         cfg.Server.Addr(),
-		Handler:      internal.NewMux(),
+		Handler:      internal.NewMux(cfg, s),
 		IdleTimeout:  cfg.Server.IdleTimeout,
 		ReadTimeout:  cfg.Server.ReadTimeout,
 		WriteTimeout: cfg.Server.WriteTimeout,
