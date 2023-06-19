@@ -10,9 +10,9 @@ import (
 
 // Config holds the configuration for the program.
 type Config struct {
-	Server          Server `env:""`
-	SlackWebHookURL string `env:"SLACK_WEB_HOOK_URL" validate:"required"`
-	Retry           Retry  `env:""`
+	Server          Server       `env:""`
+	SlackWebHookURL string       `env:"SLACK_WEB_HOOK_URL" validate:"required"`
+	Retry           RequestRetry `env:""`
 }
 
 // NewConfig is a constructor function for Config.
@@ -52,8 +52,8 @@ func (s Server) Addr() string {
 	return fmt.Sprintf("%s:%d", s.Host, s.Port)
 }
 
-// Retry holds the config for retrying requests.
-type Retry struct {
+// RequestRetry holds the config for retrying requests.
+type RequestRetry struct {
 	MaxRetries int           `env:"MAX_RETRIES,default=3"`
 	Delay      time.Duration `env:"MAX_DELAY,default=5s"`
 }

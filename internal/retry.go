@@ -6,9 +6,11 @@ import (
 	"time"
 )
 
-type effector func(context.Context, any) error
+// Effector is a function that performs some action and returns an error.
+type Effector func(context.Context, any) error
 
-func retry(effector effector, retries int, delay time.Duration) effector {
+// Retry is a function that retries effector function for a given number of times with a given delay.
+func Retry(effector Effector, retries int, delay time.Duration) Effector {
 	return func(ctx context.Context, arg any) error {
 		for r := 1; ; r++ {
 			err := effector(ctx, arg)

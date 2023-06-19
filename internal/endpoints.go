@@ -44,7 +44,7 @@ func MakeSlackEndpoint(config *Config, notifier SlackNotifier) func(w http.Respo
 		ctx, cancel := context.WithTimeout(context.Background(), config.Retry.Delay)
 		defer cancel()
 
-		err := retry(notifier.NotifySlack, config.Retry.MaxRetries, config.Retry.Delay)(ctx, slackRequestBody.Message)
+		err := Retry(notifier.NotifySlack, config.Retry.MaxRetries, config.Retry.Delay)(ctx, slackRequestBody.Message)
 		if err != nil {
 			http.Error(w, "Internal error", http.StatusInternalServerError)
 
