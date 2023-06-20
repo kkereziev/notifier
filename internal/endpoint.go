@@ -3,15 +3,11 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
 )
-
-// SlackNotifier manages sending of notification via Slack.
-type SlackNotifier interface {
-	NotifySlack(context.Context, any) error
-}
 
 // SlackRequestBody is an object used to validate request parameters for Slack notification endpoint.
 type SlackRequestBody struct {
@@ -23,6 +19,8 @@ func MakeSlackEndpoint(config *Config, notifier SlackNotifier) func(w http.Respo
 	v := validator.New()
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
 		decoder := json.NewDecoder(r.Body)
 
 		//nolint: errcheck
@@ -30,13 +28,13 @@ func MakeSlackEndpoint(config *Config, notifier SlackNotifier) func(w http.Respo
 
 		var slackRequestBody SlackRequestBody
 		if err := decoder.Decode(&slackRequestBody); err != nil {
-			http.Error(w, "Bad request", http.StatusBadRequest)
+			http.Error(w, `{"status": "Bad request"}`, http.StatusBadRequest)
 
 			return
 		}
 
 		if err := v.Struct(&slackRequestBody); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, fmt.Sprintf(`{"status": "%s"}`, err.Error()), http.StatusBadRequest)
 
 			return
 		}
@@ -50,8 +48,6 @@ func MakeSlackEndpoint(config *Config, notifier SlackNotifier) func(w http.Respo
 
 			return
 		}
-
-		w.Header().Set("Content-Type", "application/json")
 
 		if _, err := w.Write([]byte(`{"status": "Notification send."}`)); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

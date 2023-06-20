@@ -12,17 +12,19 @@ import (
 const _testDotEnvFileName = ".env.dist"
 
 func TestConfigValidation(t *testing.T) {
+	t.Parallel()
+
 	dir, err := os.Getwd()
 	if err != nil {
-		t.Error("cannot get current working directory: ", err)
+		t.Fatal("cannot get current working directory: ", err)
 	}
 
 	testEnvFilePath := fmt.Sprintf("%s/../../%s", dir, _testDotEnvFileName)
 	if err := godotenv.Load(testEnvFilePath); err != nil {
-		t.Error("failed loading env vars: ", err)
+		t.Fatal("failed loading env vars: ", err)
 	}
 
 	if _, err := internal.NewConfig(); err != nil {
-		t.Error("error creating new config: ", err)
+		t.Fatal("error creating new config: ", err)
 	}
 }

@@ -58,7 +58,7 @@ func TestRetryPositiveCases(t *testing.T) {
 
 			err := internal.Retry(tc.effector, tc.retries, tc.delay)(ctx, &counter)
 			if err != nil {
-				t.Errorf("\nExpected error to be nil but got: %s", err)
+				t.Fatalf("\nExpected error to be nil but got: %s", err)
 			}
 		})
 	}
@@ -106,7 +106,7 @@ func TestRetryNegativeCases(t *testing.T) {
 
 			err := internal.Retry(tc.effector, tc.retries, tc.delay)(ctx, "")
 			if err.Error() != tc.err.Error() {
-				t.Errorf("\nExpected: %s\nActual: %s", tc.err, err)
+				t.Fatalf("\nExpected: %s\nActual: %s", tc.err, err)
 			}
 		})
 	}
