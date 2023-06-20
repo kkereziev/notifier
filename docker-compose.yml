@@ -1,0 +1,25 @@
+version: "3.5"
+
+services:
+  server:
+    image: sumup-server
+    build:
+      target: dev
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - ${GOPATH}/pkg/mod:/go/pkg/mod:cached
+      - ${GOCACHE}:/cache/go:cached
+      - .:/go/src/github.com/kkereziev/notifier:cached
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    command:
+      - "CompileDaemon"
+      - "-log-prefix=false"
+      - "-graceful-kill=true"
+      - "-build=go build -o ./build/server main.go"
+      - "-command=./build/server"
+
+  

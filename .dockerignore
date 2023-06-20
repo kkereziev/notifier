@@ -1,0 +1,6 @@
+*_test.go
+internal/mocks
+README.md
+Makefile
+.golangci.yml
+docker-compose.yml

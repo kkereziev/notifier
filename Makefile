@@ -4,6 +4,9 @@ ifneq ("$(wildcard $(envfile))","")
 	export $(shell sed 's/=.*//' $(envfile))
 endif
 
+export GOCACHE := $(if ${GOCACHE},${GOCACHE},$(shell go env GOCACHE))
+export GOPATH := $(if ${GOPATH},${GOPATH},$(shell go env GOPATH))
+
 .PHONY: init
 init:
 	@cp .env.dist .env
@@ -20,5 +23,10 @@ run:
 generate:
 	@mockgen -source=internal/mux.go -destination=internal/mocks/notifier.go -package=mocks Notifier
 
+.PHONY: test
 test:
 	@go test ./... 
+
+.PHONY: up
+up:
+	@docker-compose up -d
