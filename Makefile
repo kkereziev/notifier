@@ -29,4 +29,10 @@ test:
 
 .PHONY: up
 up:
-	@docker-compose up -d
+	@docker-compose up -d --no-build --remove-orphans
+	@docker-compose ps
+
+.PHONY: down
+down:
+	@docker-compose down --remove-orphans
+	@docker-compose ps

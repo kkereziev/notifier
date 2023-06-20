@@ -14,7 +14,7 @@ func Retry(effector Effector, retries int, delay time.Duration) Effector {
 	return func(ctx context.Context, arg any) error {
 		for r := 1; ; r++ {
 			err := effector(ctx, arg)
-			if err == nil || r > retries {
+			if err == nil || r >= retries {
 				return err
 			}
 

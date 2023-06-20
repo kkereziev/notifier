@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/twilio/twilio-go"
+	twilioApi "github.com/twilio/twilio-go/rest/api/v2010"
 )
 
 // SlackMessage represents body for Slack message.
@@ -19,17 +22,31 @@ type Slack struct {
 	client     *http.Client
 }
 
+// Twilio holds related configuration for Twilio service, responsible for sending SMS notifications.
+type Twilio struct {
+	client *twilio.RestClient
+	number string
+}
+
 // Service handles business logic for the application.
 type Service struct {
-	Slack *Slack
+	slack  *Slack
+	twilio *Twilio
 }
 
 // NewService is a constructor function for Service.
 func NewService(config *Config) *Service {
 	return &Service{
-		Slack: &Slack{
+		slack: &Slack{
 			client:     http.DefaultClient,
 			webHookURL: config.SlackWebHookURL,
+		},
+		twilio: &Twilio{
+			client: twilio.NewRestClientWithParams(twilio.ClientParams{
+				Username: config.Twilio.SID,
+				Password: config.Twilio.Token,
+			}),
+			number: config.Twilio.Number,
 		},
 	}
 }
@@ -49,7 +66,7 @@ func (s *Service) NotifySlack(ctx context.Context, msg any) error {
 		return fmt.Errorf("failed to marshal Slack message: %v", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, s.Slack.webHookURL, bytes.NewBuffer(payload))
+	req, err := http.NewRequest(http.MethodPost, s.slack.webHookURL, bytes.NewBuffer(payload))
 	if err != nil {
 		return fmt.Errorf("failed to create HTTP request: %v", err)
 	}
@@ -57,7 +74,7 @@ func (s *Service) NotifySlack(ctx context.Context, msg any) error {
 	req.Header.Set("Content-Type", "application/json")
 	req = req.WithContext(ctx)
 
-	resp, err := s.Slack.client.Do(req)
+	resp, err := s.slack.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to send Slack notification: %v", err)
 	}
@@ -67,6 +84,24 @@ func (s *Service) NotifySlack(ctx context.Context, msg any) error {
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("unexpected response status: %s", resp.Status)
+	}
+
+	return nil
+}
+
+// NotifySMS sends SMS notification.
+func (s *Service) NotifySMS(ctx context.Context, msg any) error {
+	twilioMsg := msg.(*SMSRequestBody)
+
+	params := &twilioApi.CreateMessageParams{}
+
+	params.SetTo(twilioMsg.SendToNumber)
+	params.SetFrom(s.twilio.number)
+	params.SetBody(twilioMsg.Message)
+
+	_, err := s.twilio.client.Api.CreateMessage(params)
+	if err != nil {
+		return err
 	}
 
 	return nil

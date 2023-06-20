@@ -19,6 +19,9 @@ var _ internal.Notifier = &NotifierMock{}
 //
 //		// make and configure a mocked internal.Notifier
 //		mockedNotifier := &NotifierMock{
+//			NotifySMSFunc: func(contextMoqParam context.Context, ifaceVal any) error {
+//				panic("mock out the NotifySMS method")
+//			},
 //			NotifySlackFunc: func(contextMoqParam context.Context, ifaceVal any) error {
 //				panic("mock out the NotifySlack method")
 //			},
@@ -29,11 +32,21 @@ var _ internal.Notifier = &NotifierMock{}
 //
 //	}
 type NotifierMock struct {
+	// NotifySMSFunc mocks the NotifySMS method.
+	NotifySMSFunc func(contextMoqParam context.Context, ifaceVal any) error
+
 	// NotifySlackFunc mocks the NotifySlack method.
 	NotifySlackFunc func(contextMoqParam context.Context, ifaceVal any) error
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// NotifySMS holds details about calls to the NotifySMS method.
+		NotifySMS []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// IfaceVal is the ifaceVal argument value.
+			IfaceVal any
+		}
 		// NotifySlack holds details about calls to the NotifySlack method.
 		NotifySlack []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -42,7 +55,44 @@ type NotifierMock struct {
 			IfaceVal any
 		}
 	}
+	lockNotifySMS   sync.RWMutex
 	lockNotifySlack sync.RWMutex
+}
+
+// NotifySMS calls NotifySMSFunc.
+func (mock *NotifierMock) NotifySMS(contextMoqParam context.Context, ifaceVal any) error {
+	if mock.NotifySMSFunc == nil {
+		panic("NotifierMock.NotifySMSFunc: method is nil but Notifier.NotifySMS was just called")
+	}
+	callInfo := struct {
+		ContextMoqParam context.Context
+		IfaceVal        any
+	}{
+		ContextMoqParam: contextMoqParam,
+		IfaceVal:        ifaceVal,
+	}
+	mock.lockNotifySMS.Lock()
+	mock.calls.NotifySMS = append(mock.calls.NotifySMS, callInfo)
+	mock.lockNotifySMS.Unlock()
+	return mock.NotifySMSFunc(contextMoqParam, ifaceVal)
+}
+
+// NotifySMSCalls gets all the calls that were made to NotifySMS.
+// Check the length with:
+//
+//	len(mockedNotifier.NotifySMSCalls())
+func (mock *NotifierMock) NotifySMSCalls() []struct {
+	ContextMoqParam context.Context
+	IfaceVal        any
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		IfaceVal        any
+	}
+	mock.lockNotifySMS.RLock()
+	calls = mock.calls.NotifySMS
+	mock.lockNotifySMS.RUnlock()
+	return calls
 }
 
 // NotifySlack calls NotifySlackFunc.

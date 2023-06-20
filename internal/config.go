@@ -13,6 +13,7 @@ type Config struct {
 	Server          Server       `env:""`
 	SlackWebHookURL string       `env:"SLACK_WEB_HOOK_URL" validate:"required"`
 	Retry           RequestRetry `env:""`
+	Twilio          TwilioConfig `env:""`
 }
 
 // NewConfig is a constructor function for Config.
@@ -55,5 +56,12 @@ func (s Server) Addr() string {
 // RequestRetry holds the config for retrying requests.
 type RequestRetry struct {
 	MaxRetries int           `env:"MAX_RETRIES,default=3"`
-	Delay      time.Duration `env:"MAX_DELAY,default=5s"`
+	Delay      time.Duration `env:"MAX_DELAY,default=2s"`
+}
+
+// TwilioConfig holds configuration for Twilio service.
+type TwilioConfig struct {
+	SID    string `env:"TWILIO_SID" validate:"required"`
+	Token  string `env:"TWILIO_TOKEN" validate:"required"`
+	Number string `env:"TWILIO_NUMBER" validate:"required"`
 }
