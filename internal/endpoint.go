@@ -24,13 +24,13 @@ func MakeSlackEndpoint(config *Config, notifier SlackNotifier) func(w http.Respo
 
 		var slackRequest SlackRequestBody
 		if err := decoder.Decode(&slackRequest); err != nil {
-			http.Error(w, `{"status": "Bad request"}`, http.StatusBadRequest)
+			http.Error(w, `{"error": "Bad request"}`, http.StatusBadRequest)
 
 			return
 		}
 
 		if err := v.Struct(&slackRequest); err != nil {
-			http.Error(w, fmt.Sprintf(`{"status": "%s"}`, err.Error()), http.StatusBadRequest)
+			http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()), http.StatusBadRequest)
 
 			return
 		}
@@ -82,6 +82,49 @@ func MakeSMSEndpoint(config *Config, notifier SMSNotifier) func(w http.ResponseW
 		defer cancel()
 
 		err := Retry(notifier.NotifySMS, config.Retry.MaxRetries, config.Retry.Delay)(ctx, &smsRequest)
+		if err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()), http.StatusInternalServerError)
+
+			return
+		}
+
+		if _, err := w.Write([]byte(`{"status": "Notification send."}`)); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+
+			return
+		}
+	}
+}
+
+// MakeMailEndpoint creates endpoint for sending SMS notifications.
+func MakeMailEndpoint(config *Config, notifier MailNotifier) func(w http.ResponseWriter, r *http.Request) {
+	v := validator.New()
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		decoder := json.NewDecoder(r.Body)
+
+		//nolint: errcheck
+		defer r.Body.Close()
+
+		var mailRequest MailRequestBody
+		if err := decoder.Decode(&mailRequest); err != nil {
+			http.Error(w, `{"error": "Bad request"}`, http.StatusBadRequest)
+
+			return
+		}
+
+		if err := v.Struct(&mailRequest); err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()), http.StatusBadRequest)
+
+			return
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Retry.MaxRetries)*config.Retry.Delay+5)
+		defer cancel()
+
+		err := Retry(notifier.NotifyMail, config.Retry.MaxRetries, config.Retry.Delay)(ctx, &mailRequest)
 		if err != nil {
 			http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()), http.StatusInternalServerError)
 

@@ -19,6 +19,9 @@ var _ internal.Notifier = &NotifierMock{}
 //
 //		// make and configure a mocked internal.Notifier
 //		mockedNotifier := &NotifierMock{
+//			NotifyMailFunc: func(contextMoqParam context.Context, ifaceVal any) error {
+//				panic("mock out the NotifyMail method")
+//			},
 //			NotifySMSFunc: func(contextMoqParam context.Context, ifaceVal any) error {
 //				panic("mock out the NotifySMS method")
 //			},
@@ -32,6 +35,9 @@ var _ internal.Notifier = &NotifierMock{}
 //
 //	}
 type NotifierMock struct {
+	// NotifyMailFunc mocks the NotifyMail method.
+	NotifyMailFunc func(contextMoqParam context.Context, ifaceVal any) error
+
 	// NotifySMSFunc mocks the NotifySMS method.
 	NotifySMSFunc func(contextMoqParam context.Context, ifaceVal any) error
 
@@ -40,6 +46,13 @@ type NotifierMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// NotifyMail holds details about calls to the NotifyMail method.
+		NotifyMail []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// IfaceVal is the ifaceVal argument value.
+			IfaceVal any
+		}
 		// NotifySMS holds details about calls to the NotifySMS method.
 		NotifySMS []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -55,8 +68,45 @@ type NotifierMock struct {
 			IfaceVal any
 		}
 	}
+	lockNotifyMail  sync.RWMutex
 	lockNotifySMS   sync.RWMutex
 	lockNotifySlack sync.RWMutex
+}
+
+// NotifyMail calls NotifyMailFunc.
+func (mock *NotifierMock) NotifyMail(contextMoqParam context.Context, ifaceVal any) error {
+	if mock.NotifyMailFunc == nil {
+		panic("NotifierMock.NotifyMailFunc: method is nil but Notifier.NotifyMail was just called")
+	}
+	callInfo := struct {
+		ContextMoqParam context.Context
+		IfaceVal        any
+	}{
+		ContextMoqParam: contextMoqParam,
+		IfaceVal:        ifaceVal,
+	}
+	mock.lockNotifyMail.Lock()
+	mock.calls.NotifyMail = append(mock.calls.NotifyMail, callInfo)
+	mock.lockNotifyMail.Unlock()
+	return mock.NotifyMailFunc(contextMoqParam, ifaceVal)
+}
+
+// NotifyMailCalls gets all the calls that were made to NotifyMail.
+// Check the length with:
+//
+//	len(mockedNotifier.NotifyMailCalls())
+func (mock *NotifierMock) NotifyMailCalls() []struct {
+	ContextMoqParam context.Context
+	IfaceVal        any
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		IfaceVal        any
+	}
+	mock.lockNotifyMail.RLock()
+	calls = mock.calls.NotifyMail
+	mock.lockNotifyMail.RUnlock()
+	return calls
 }
 
 // NotifySMS calls NotifySMSFunc.

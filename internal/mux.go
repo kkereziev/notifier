@@ -10,6 +10,7 @@ const (
 	_apiURLPattern    = "/api/v1"
 	_slackEndpointURL = "/slack"
 	_smsEndpointURL   = "/sms"
+	_mailEndpointURL  = "/mail"
 )
 
 // SlackNotifier manages sending of notification via Slack.
@@ -22,6 +23,11 @@ type SMSNotifier interface {
 	NotifySMS(context.Context, any) error
 }
 
+// MailNotifier manages sending of notification via mail.
+type MailNotifier interface {
+	NotifyMail(context.Context, any) error
+}
+
 // Notifier is manages notification sending.
 //
 // Implementations of Notifier must be save for concurrent use by multiple goroutines.
@@ -30,6 +36,7 @@ type SMSNotifier interface {
 type Notifier interface {
 	SlackNotifier
 	SMSNotifier
+	MailNotifier
 }
 
 // NewMux is a constructor function for creating new multiplexer for the HTTP server.
@@ -46,4 +53,5 @@ func registerRoutes(config *Config, m *httptreemux.ContextMux, notifier Notifier
 
 	g.POST(_slackEndpointURL, MakeSlackEndpoint(config, notifier))
 	g.POST(_smsEndpointURL, MakeSMSEndpoint(config, notifier))
+	g.POST(_mailEndpointURL, MakeMailEndpoint(config, notifier))
 }

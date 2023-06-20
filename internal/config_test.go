@@ -9,7 +9,7 @@ import (
 	"github.com/kkereziev/notifier/internal"
 )
 
-const _testDotEnvFileName = ".env.dist"
+const _testDotEnvFileName = ".env.test"
 
 func TestConfigValidation(t *testing.T) {
 	t.Parallel()
@@ -19,7 +19,7 @@ func TestConfigValidation(t *testing.T) {
 		t.Fatal("cannot get current working directory: ", err)
 	}
 
-	testEnvFilePath := fmt.Sprintf("%s/../../%s", dir, _testDotEnvFileName)
+	testEnvFilePath := fmt.Sprintf("%s/../%s", dir, _testDotEnvFileName)
 	if err := godotenv.Load(testEnvFilePath); err != nil {
 		t.Fatal("failed loading env vars: ", err)
 	}
