@@ -1,7 +1,7 @@
 version: "3.5"
 
 services:
-  server:
+  server-dev:
     image: sumup-server
     build:
       target: dev
@@ -12,7 +12,7 @@ services:
       - ${GOCACHE}:/cache/go:cached
       - .:/go/src/github.com/kkereziev/notifier:cached
     ports:
-      - "8000:8000"
+      - "8001:8000"
     env_file:
       - .env
     command:
@@ -21,5 +21,16 @@ services:
       - "-graceful-kill=true"
       - "-build=go build -o ./build/server main.go"
       - "-command=./build/server"
+
+  server:
+    build:
+      target: prod
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+
 
   

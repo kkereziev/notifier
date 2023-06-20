@@ -58,7 +58,12 @@ func NewService(config *Config) *Service {
 			number: config.Twilio.Number,
 		},
 		email: &Email{
-			client:        gomail.NewDialer(config.Mail.SMTPHost, config.Mail.SMTPPort, config.Mail.SMTPUsername, config.Mail.SMTPPassword),
+			client: gomail.NewDialer(
+				config.Mail.SMTPHost,
+				config.Mail.SMTPPort,
+				config.Mail.SMTPUsername,
+				config.Mail.SMTPPassword,
+			),
 			messageSender: config.Mail.EmailSender,
 		},
 	}

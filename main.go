@@ -32,7 +32,7 @@ func run(log *log.Logger) error {
 
 	server := &http.Server{
 		Addr:         cfg.Server.Addr(),
-		Handler:      internal.NewMux(cfg, s),
+		Handler:      internal.NewMux(cfg, log, s),
 		IdleTimeout:  cfg.Server.IdleTimeout,
 		ReadTimeout:  cfg.Server.ReadTimeout,
 		WriteTimeout: cfg.Server.WriteTimeout,

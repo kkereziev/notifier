@@ -19,7 +19,7 @@ FROM base as builder
 
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o /dist/server ./main.go
 
-FROM alpine:3.16
+FROM alpine:3.16 as prod
 
 RUN apk update && apk add tzdata
 

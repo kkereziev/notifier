@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -18,6 +19,12 @@ import (
 )
 
 const _dotEnvFileName = ".env.test"
+
+var logger *log.Logger
+
+func init() {
+	logger = log.New(io.Discard, "", log.LstdFlags)
+}
 
 func TestSlackNotificationPositiveCases(t *testing.T) {
 	t.Parallel()
@@ -58,7 +65,7 @@ func TestSlackNotificationPositiveCases(t *testing.T) {
 		},
 	}
 
-	mux := internal.NewMux(config, notifierMock)
+	mux := internal.NewMux(config, logger, notifierMock)
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -120,7 +127,7 @@ func TestSlackNotificationNegativeCases(t *testing.T) {
 
 	notifierMock := &mocks.NotifierMock{}
 
-	mux := internal.NewMux(config, notifierMock)
+	mux := internal.NewMux(config, logger, notifierMock)
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -195,7 +202,7 @@ func TestSMSNotificationPositiveCases(t *testing.T) {
 		},
 	}
 
-	mux := internal.NewMux(config, notifierMock)
+	mux := internal.NewMux(config, logger, notifierMock)
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -277,7 +284,7 @@ func TestSMSNotificationNegativeCases(t *testing.T) {
 
 	notifierMock := &mocks.NotifierMock{}
 
-	mux := internal.NewMux(config, notifierMock)
+	mux := internal.NewMux(config, logger, notifierMock)
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -360,7 +367,7 @@ func TestMailNotificationPositiveCases(t *testing.T) {
 		},
 	}
 
-	mux := internal.NewMux(config, notifierMock)
+	mux := internal.NewMux(config, logger, notifierMock)
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -455,7 +462,7 @@ func TestMailNotificationNegativeCases(t *testing.T) {
 
 	notifierMock := &mocks.NotifierMock{}
 
-	mux := internal.NewMux(config, notifierMock)
+	mux := internal.NewMux(config, logger, notifierMock)
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {

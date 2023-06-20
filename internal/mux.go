@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"log"
 
 	"github.com/dimfeld/httptreemux/v5"
 )
@@ -40,16 +41,20 @@ type Notifier interface {
 }
 
 // NewMux is a constructor function for creating new multiplexer for the HTTP server.
-func NewMux(config *Config, notifier Notifier) *httptreemux.ContextMux {
+func NewMux(config *Config, logger *log.Logger, notifier Notifier) *httptreemux.ContextMux {
 	mux := httptreemux.NewContextMux()
 
-	registerRoutes(config, mux, notifier)
+	registerRoutes(config, logger, mux, notifier)
 
 	return mux
 }
 
-func registerRoutes(config *Config, m *httptreemux.ContextMux, notifier Notifier) {
+func registerRoutes(config *Config, logger *log.Logger, m *httptreemux.ContextMux, notifier Notifier) {
 	g := m.NewGroup(_apiURLPattern)
+
+	g.Use(CORSMiddleware)
+	g.Use(RecoverMiddleware(logger))
+	g.Use(LoggingMiddleware(logger))
 
 	g.POST(_slackEndpointURL, MakeSlackEndpoint(config, notifier))
 	g.POST(_smsEndpointURL, MakeSMSEndpoint(config, notifier))
