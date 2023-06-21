@@ -35,7 +35,7 @@ func MakeSlackEndpoint(config *Config, notifier SlackNotifier) func(w http.Respo
 			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), config.Retry.Delay)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Retry.MaxRetries+5)*config.Retry.Delay)
 		defer cancel()
 
 		err := Retry(notifier.NotifySlack, config.Retry.MaxRetries, config.Retry.Delay)(ctx, slackRequest.Message)
@@ -78,7 +78,7 @@ func MakeSMSEndpoint(config *Config, notifier SMSNotifier) func(w http.ResponseW
 			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Retry.MaxRetries)*config.Retry.Delay+5)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Retry.MaxRetries+5)*config.Retry.Delay)
 		defer cancel()
 
 		err := Retry(notifier.NotifySMS, config.Retry.MaxRetries, config.Retry.Delay)(ctx, &smsRequest)
@@ -121,7 +121,7 @@ func MakeMailEndpoint(config *Config, notifier MailNotifier) func(w http.Respons
 			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Retry.MaxRetries)*config.Retry.Delay+5)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Retry.MaxRetries+5)*config.Retry.Delay)
 		defer cancel()
 
 		err := Retry(notifier.NotifyMail, config.Retry.MaxRetries, config.Retry.Delay)(ctx, &mailRequest)
