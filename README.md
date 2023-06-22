@@ -1,5 +1,8 @@
 Hey folks, first of all I'd like to thank you for the opportunity and for the task, it was quite fun working on it.
 
+## Important
+There is a second solution I created in separate branch in this repo called v2, please after reviewing this one checkout and see the other solution, since it is meant to be the more robust of the two.
+
 ## Basic Description of the solution
 What I've created is a simple HTTP server with 3 POST endpoints for sending notifications via Slack, SMS and Mail. The server is stateless(we want it to be horizontally scalable) and has 3 middlewares(request/response logging, panic handling and and pre-flight request handling). The solution itself is using 3rd party integration in order to send notifications - for Slack it need Slack WebHook(https://api.slack.com/messaging/webhooks), for SMS notification it uses Twilio(https://www.twilio.com/en-us) and for emails it uses SMTP protocol. I've dockerized the server and have docker-compose setup with 2 services - one is for local hot reloading of the server and the second one is optimized version of the server.
 
