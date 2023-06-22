@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package notification;
 
-option go_package = "github.com/kkereziev/notifier/internal/proto;proto";
+option go_package = "github.com/kkereziev/notifier/internal/v2/proto;proto";
 
 
 service NotificationService {

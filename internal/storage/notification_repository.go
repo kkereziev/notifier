@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/kkereziev/notifier/internal/entity"
+	"github.com/kkereziev/notifier/v2/internal/entity"
 )
 
 // NotificationRepository is a repository for notifications.

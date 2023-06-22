@@ -7,10 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/kkereziev/notifier/internal"
-	"github.com/kkereziev/notifier/internal/adding"
-	"github.com/kkereziev/notifier/internal/config"
-	"github.com/kkereziev/notifier/internal/storage"
+	"github.com/kkereziev/notifier/v2/internal"
+	"github.com/kkereziev/notifier/v2/internal/adding"
+	"github.com/kkereziev/notifier/v2/internal/config"
+	"github.com/kkereziev/notifier/v2/internal/storage"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

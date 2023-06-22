@@ -7,9 +7,9 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"github.com/kkereziev/notifier/internal"
-	"github.com/kkereziev/notifier/internal/adding"
-	pb "github.com/kkereziev/notifier/internal/proto"
+	"github.com/kkereziev/notifier/v2/internal"
+	"github.com/kkereziev/notifier/v2/internal/adding"
+	pb "github.com/kkereziev/notifier/v2/internal/proto"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

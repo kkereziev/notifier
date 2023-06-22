@@ -1,4 +1,4 @@
-module github.com/kkereziev/notifier
+module github.com/kkereziev/notifier/v2
 
 go 1.20
 

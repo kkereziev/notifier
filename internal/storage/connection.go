@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/kkereziev/notifier/internal/config"
+	"github.com/kkereziev/notifier/v2/internal/config"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	sqldblogger "github.com/simukti/sqldb-logger"

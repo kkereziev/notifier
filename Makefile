@@ -25,10 +25,11 @@ dev-dependencies:
 
 .PHONY: gen-proto
 gen-proto:
-	@protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative pkg/proto/notification.proto
+	@protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative internal/proto/notification.proto
 
-run-server:
-	@go run cmd/server/main.go
+.PHONY: run-client
+run-client:
+	@go run cmd/playground/main.go
 
 .PHONY: shared-%
 # Proxies pattern based target call to shared services Makefile

@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kkereziev/notifier/internal/config"
-	"github.com/kkereziev/notifier/internal/entity"
-	"github.com/kkereziev/notifier/internal/storage"
+	"github.com/kkereziev/notifier/v2/internal/config"
+	"github.com/kkereziev/notifier/v2/internal/entity"
+	"github.com/kkereziev/notifier/v2/internal/storage"
 	"github.com/twilio/twilio-go"
 	twilioApi "github.com/twilio/twilio-go/rest/api/v2010"
 	"go.uber.org/zap"

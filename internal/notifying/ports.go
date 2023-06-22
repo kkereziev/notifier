@@ -3,7 +3,7 @@ package notifying
 import (
 	"context"
 
-	"github.com/kkereziev/notifier/internal/entity"
+	"github.com/kkereziev/notifier/v2/internal/entity"
 )
 
 // NotificationStorage is a storage for notifications.

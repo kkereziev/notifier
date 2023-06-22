@@ -7,9 +7,9 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
-	"github.com/kkereziev/notifier/internal/entity"
-	pb "github.com/kkereziev/notifier/internal/proto"
-	"github.com/kkereziev/notifier/internal/storage"
+	"github.com/kkereziev/notifier/v2/internal/entity"
+	pb "github.com/kkereziev/notifier/v2/internal/proto"
+	"github.com/kkereziev/notifier/v2/internal/storage"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

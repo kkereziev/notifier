@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/kkereziev/notifier/internal/config"
-	pb "github.com/kkereziev/notifier/internal/proto"
+	"github.com/kkereziev/notifier/v2/internal/config"
+	pb "github.com/kkereziev/notifier/v2/internal/proto"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"

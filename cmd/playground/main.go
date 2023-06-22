@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/kkereziev/notifier"
+	"github.com/kkereziev/notifier/v2"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := c.SendMailNotification("Alert!!!", "kkereziev@abv.bg", "Hello"); err != nil {
+	if err := c.SendSlackNotification("Hello!"); err != nil {
 		log.Fatal(err)
 	}
 }
