@@ -22,7 +22,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := c.SendSlackNotification("Hello!"); err != nil {
+	if err := c.SendSMSNotification("Hello!", "+35988357979"); err != nil {
 		log.Fatal(err)
 	}
 }

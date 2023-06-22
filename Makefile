@@ -14,9 +14,6 @@ init: dev-dependencies build
 	@cp .env.dist .env
 
 
-run:
-	@go run cmd/server/main.go
-
 .PHONY: dev-dependencies
 dev-dependencies:
 	@brew install protoc
