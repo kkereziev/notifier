@@ -1,0 +1,89 @@
+version: "3.7"
+
+services:
+  server-dev:
+    image: notification-service:dev
+    volumes:
+      - ${GOPATH}/pkg/mod:/go/pkg/mod:cached
+      - ${GOCACHE}:/cache/go:cached
+      - ../.:/go/src/github.com/kkereziev/notifier:cached
+    ports:
+      - "8001:8000"
+    networks:
+      - dev
+    env_file:
+      - ../../.env
+    command:
+      - "CompileDaemon"
+      - "-log-prefix=false"
+      - "-graceful-kill=true"
+      - "-build=go build -o ./build/server ./cmd/server/main.go"
+      - "-command=./build/server"
+
+  postgres:
+    image: postgres:14.1
+    command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c max_connections=200
+    volumes:
+      - ./postgres:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - local
+      - dev
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: ${DATABASE_LIST}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+
+  server:
+    image: notification-service:prod
+    depends_on:
+     - postgres
+    ports:
+      - "8000:8000"
+    networks:
+      - local
+    env_file:
+      - ../../.env
+
+  slack-cron:
+    command: ["./slack-cron"]
+    image: notification-service:prod
+    depends_on:
+      - postgres
+    networks:
+      - local
+    env_file:
+      - ../../.env
+
+  mail-cron:
+    command: ["./mail-cron"]
+    image: notification-service:prod
+    depends_on:
+     - postgres    
+    networks:
+      - local
+    env_file:
+      - ../../.env
+
+  sms-cron:
+    command: ["./sms-cron"]
+    image: notification-service:prod
+    depends_on:
+     - postgres    
+    networks:
+      - local
+    env_file:
+      - ../../.env
+
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  local:
+    driver: bridge
+  dev:
+    driver: bridge

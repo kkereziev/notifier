@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package notification;
+
+option go_package = "github.com/kkereziev/notifier/internal/proto;proto";
+
+
+service NotificationService {
+  rpc SendSMSNotification(SendSMSNotificationRequest) returns (SendSMSNotificationResponse);
+
+  rpc SendSlackNotification(SendSlackNotificationRequest) returns (SendSlackNotificationResponse);
+  
+  rpc SendMailNotification(SendMailNotificationRequest) returns (SendMailNotificationResponse);
+}
+
+message SendSMSNotificationRequest {
+  string message = 1;
+  string send_to = 2;
+}
+
+message SendSMSNotificationResponse {}
+
+message SendSlackNotificationRequest {
+  string message = 1;
+}
+
+message SendSlackNotificationResponse {}
+
+message SendMailNotificationRequest {
+  string message = 1;
+  string send_to = 2;
+  string subject = 3;
+}
+
+message SendMailNotificationResponse {}
